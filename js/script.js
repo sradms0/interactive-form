@@ -1,4 +1,4 @@
-const $otherJobInput = $('#other-job');
+const $otherJobInput = $('#other-title');
 const $jobRoleSelect = $('#title');
 
 $jobRoleSelect.on('change', function() {
