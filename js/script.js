@@ -10,6 +10,8 @@ const $colorSelect = $('#color');
 
 /**** activities info ****/
 const $activitiesFieldset = $('.activities');
+let total = 0;
+const totalStringLiteral = _ => `Total: $${total}`;
 
 /**** event listeners ****/
 // disable/enable activities based on schedule, and add/subtract total
@@ -22,7 +24,7 @@ $activitiesFieldset.on('change', function(e) {
     let extracted;
 
     if (type === 'date') selectedRegex = dateRegex;
-    else if (type === 'price') selectedRegex = PriceRegex;
+    else if (type === 'price') selectedRegex = priceRegex;
 
     extracted = string.match(selectedRegex);
     if (extracted) extracted = extracted[0];
@@ -31,10 +33,12 @@ $activitiesFieldset.on('change', function(e) {
 
   const extractInput = $ => $.children(':first');
 
-  // save selected activity and date, and other unselected activities  
+  // save selected activity, price, date, and other unselected activities  
   const $activityLabel = $(e.target.parentNode);
   const $activityInput = extractInput($activityLabel);
+  const checked = $activityInput.prop('checked');
   const date = extractString($activityLabel, {type: 'date'});
+  let price = extractString($activityLabel, {type: 'price'});
 
   // search for any conflicting day and time
   const $otherActivityLabels = $(this).find('input:not(:checked)').parent();
@@ -45,10 +49,15 @@ $activitiesFieldset.on('change', function(e) {
 
     // if dates are equal: enable or disable checkbox according to status
     if (date === nextDate) {
-      const disabledStatus = $activityInput.prop('checked');
-      $nextActivityLabel.children(':first').prop('disabled', disabledStatus);
+      $nextActivityLabel.children(':first').prop('disabled', checked);
     }
   });
+
+  // handle total price calculation
+  price = parseInt(price.slice(1));
+  if (!checked) price *= -1;
+  total += price;
+  $('#activities-total').text(`${totalStringLiteral()}`);
 });
 
 // toggle other rob role text field
@@ -86,3 +95,6 @@ $nameInput.focus();
 
 // hide other job role text field
 $otherJobInput.hide();
+
+// add total pricing to activites
+$activitiesFieldset.append(`<div id="activities-total">${totalStringLiteral()}</div>`);
