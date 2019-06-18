@@ -109,14 +109,15 @@ $jobRoleSelect.on('change', function() {
 $designSelect.on('change', function() {
   const $heartJSOptions =  $('option:contains("I ♥ JS shirt only")');
   const $JSPunOptions = $('option:contains("JS Puns shirt only")');
+  const selectFirstOption = $ => $.show().eq(0).prop('selected', true);
 
   $colorsDiv.show();
 
   if (this.value === 'heart js') {
-    $heartJSOptions.show().eq(0).prop('selected', true);
+    selectFirstOption($heartJSOptions);
     $JSPunOptions.hide();
   } else if (this.value === 'js puns') {
-    $JSPunOptions.show().eq(0).prop('selected', true);
+    selectFirstOption($JSPunOptions);
     $heartJSOptions.hide();
   } else {
     $colorsDiv.hide();
@@ -145,4 +146,4 @@ $colorsDiv.hide();
 
 // set default payment selection to credit card, and disable 'Select Payment' option
 showPayment({ type: 'credit card', select: true });
-$paymentOption.eq(0).prop('disabled', true);
+$paymentOptions.eq(0).prop('disabled', true);
