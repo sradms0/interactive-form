@@ -13,6 +13,42 @@ const $activitiesFieldset = $('.activities');
 let total = 0;
 const totalStringLiteral = _ => `Total: $${total}`;
 
+/**** payment info ****/
+const $paymentSelect = $('#payment');
+const $paymentSiblings = $paymentSelect.nextAll();
+const $creditCardDiv = $paymentSiblings.eq(0);
+const $payPalP = $paymentSiblings.eq(1);
+const $bitCoinP = $paymentSiblings.eq(2);
+
+
+
+/**** helpers ****/
+function showPayment({ type, select=false}) {
+  $paymentSiblings.hide();
+  let eq;
+  switch (type) {
+    case 'credit card':
+      eq = 0;
+      break;
+    case 'paypal':
+      eq = 1;
+      break;
+    case 'bitcoin':
+      eq = 2;
+      break;
+    default:
+      break;
+  }
+  $paymentSiblings.eq(eq).show();
+  if (select) {
+    $paymentSelect
+      .children()
+      .eq(eq+1)
+      .prop('selected', true);
+  }
+}
+
+
 /**** event listeners ****/
 // disable/enable activities based on schedule, and add/subtract total
 $activitiesFieldset.on('change', function(e) {
@@ -87,6 +123,11 @@ $designSelect.on('change', function() {
   } 
 });
 
+// display and hide payment methods
+$paymentSelect.on('change', function() {
+  const { value } = this;
+  showPayment({ type: value });
+});
 
 
 /**** page load ****/
@@ -101,3 +142,6 @@ $activitiesFieldset.append(`<div id="activities-total">${totalStringLiteral()}</
 
 // hide shirt colors 
 $colorsDiv.hide();
+
+// set default payment selection to credit card
+showPayment({ type: 'credit card', select: true });
