@@ -15,6 +15,7 @@ const totalStringLiteral = _ => `Total: $${total}`;
 
 /**** payment info ****/
 const $paymentSelect = $('#payment');
+const $paymentOptions = $paymentSelect.children();
 const $paymentSiblings = $paymentSelect.nextAll();
 const $creditCardDiv = $paymentSiblings.eq(0);
 const $payPalP = $paymentSiblings.eq(1);
@@ -26,6 +27,7 @@ const $bitCoinP = $paymentSiblings.eq(2);
 function showPayment({ type, select=false}) {
   $paymentSiblings.hide();
   let eq;
+
   switch (type) {
     case 'credit card':
       eq = 0;
@@ -40,11 +42,9 @@ function showPayment({ type, select=false}) {
       break;
   }
   $paymentSiblings.eq(eq).show();
+
   if (select) {
-    $paymentSelect
-      .children()
-      .eq(eq+1)
-      .prop('selected', true);
+    $paymentOptions.eq(eq+1).prop('selected', true);
   }
 }
 
@@ -116,7 +116,7 @@ $designSelect.on('change', function() {
     $heartJSOptions.show().eq(0).prop('selected', true);
     $JSPunOptions.hide();
   } else if (this.value === 'js puns') {
-    $JSPunOptions.show().eq(0).prop('selected', true);;
+    $JSPunOptions.show().eq(0).prop('selected', true);
     $heartJSOptions.hide();
   } else {
     $colorsDiv.hide();
@@ -143,5 +143,6 @@ $activitiesFieldset.append(`<div id="activities-total">${totalStringLiteral()}</
 // hide shirt colors 
 $colorsDiv.hide();
 
-// set default payment selection to credit card
+// set default payment selection to credit card, and disable 'Select Payment' option
 showPayment({ type: 'credit card', select: true });
+$paymentOption.eq(0).prop('disabled', true);
