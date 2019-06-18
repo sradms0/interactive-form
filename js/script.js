@@ -98,3 +98,6 @@ $otherJobInput.hide();
 
 // add total pricing to activites
 $activitiesFieldset.append(`<div id="activities-total">${totalStringLiteral()}</div>`);
+
+// hide shirt colors 
+$colorsDiv.hide();
