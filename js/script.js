@@ -53,7 +53,7 @@ function initErrorMessages() {
   $nameInput.after('<div class="name-error">name required</div>');
   $emailInput.after('<div class="mail-error">valid email required</div>');
   $activitiesFieldset.after('<div class="activities-error">select at least one activity</div>');
-  $cardNumberInput .after('<div class="cc-num-error">number between 13 and 16 </div>');
+  $cardNumberInput .after('<div class="cc-num-error">number between 13 and 16 required</div>');
   $zipCodeInput.after('<div class="zip-error">5 digit zip code required</div>');
   $cVVInput.after('<div class="cvv-error">3 digit number required</div>');
   $('div[class$="error"]').hide();
