@@ -164,6 +164,15 @@ option {
   clear: both;
 }
 
+div[class$="error"] {
+    color: red;
+    font-weight: bold;
+}
+
+input[type="text"] ~ div[class$="error"] {
+    margin-top: -20px;
+}
+
 /* ================================= 
   Media Queries
 ==================================== */
