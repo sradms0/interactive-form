@@ -60,9 +60,10 @@ function initErrorMessages() {
 }
 
 function validator(e, payment) {
-  const validators = [
+  const { target } = e;
+  let validators = [
     {key: 'name', func: _=> /\w{2}/.test($nameInput.val())},
-    {key: 'mail', func: _=> /\w+@\w+.\w{2,3}/.test($emailInput.val())}, 
+    {key: 'mail', func: _=> /\w+@\w+\.\w{2,3}/.test($emailInput.val())}, 
     {key: 'activities', func: _=> $activitiesFieldset.find('input:checked').length > 0},
   ];
   if (payment === 'credit card') {
@@ -73,7 +74,14 @@ function validator(e, payment) {
     );
   }
 
-  // run through fields, hiding/showing errs when needed
+  // check for live validation on form children
+  if (target.tagName !== 'FORM') {
+    let key = target.id || target.className || null;
+    if (!key && target.type === 'checkbox') key = 'activities';
+    validators = validators.filter(v => v.key === key);
+  }
+
+  // run through field(s), hiding/showing err(s) when needed
   let errors = 0;
   validators.forEach(v => {
     const $errorDiv = $(`.${v.key}-error`).show();
@@ -171,7 +179,7 @@ $paymentSelect.on('change', function() {
 });
 
 // stop form submission if there are errors
-$form.on('submit', function(e) { !validator(e, $paymentSelect.val()) });
+$form.on('submit change focusout input', function(e) { validator(e, $paymentSelect.val()) });
 
 /**** page load ****/
 // set focus on first text field
