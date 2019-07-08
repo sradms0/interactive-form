@@ -50,32 +50,57 @@ function showPayment({ type, select=false}) {
 }
 
 function initErrorMessages() {
-  $nameInput.after('<div class="name-error">name required</div>');
-  $emailInput.after('<div class="mail-error">valid email required</div>');
-  $activitiesFieldset.after('<div class="activities-error">select at least one activity</div>');
-  $cardNumberInput .after('<div class="cc-num-error">number between 13 and 16 required</div>');
-  $zipCodeInput.after('<div class="zip-error">5 digit zip code required</div>');
-  $cVVInput.after('<div class="cvv-error">3 digit number required</div>');
+  $nameInput.after('<div class="name-error"></div>');
+  $emailInput.after('<div class="mail-error"></div>');
+  $activitiesFieldset.after('<div class="activities-error"></div>');
+  $cardNumberInput .after('<div class="cc-num-error"></div>');
+  $zipCodeInput.after('<div class="zip-error"></div>');
+  $cVVInput.after('<div class="cvv-error"></div>');
   $('div[class$="error"]').hide();
 }
 
 function validator(e, payment) {
   const { target } = e;
   let validators = [
-    {key: 'name', func: _=> /\w{2}/.test($nameInput.val())},
-    {key: 'mail', func: _=> /\w+@\w+\.\w{2,3}/.test($emailInput.val())}, 
-    {key: 'activities', func: _=> $activitiesFieldset.find('input:checked').length > 0},
+    {key: 'name', func: _=> 
+      /\d+/.test($nameInput.val()) ? 'alpha-characters required' :
+      !/\w{2}/.test($nameInput.val()) ? 'name required' :
+      null
+    },
+    {key: 'mail', func: _=> 
+      !/\w+@\w+\.\w{2,3}/.test($emailInput.val()) ? 'valid email required' : 
+      null
+    }, 
+    {key: 'activities', func: _=> 
+      $activitiesFieldset.find('input:checked').length === 0 ? 'select at least one activity' :
+      null
+    }
   ];
+
   if (payment === 'credit card') {
+    const alphaCheck = $ => /[a-z]+/.test($.val());
+    const alphaMsg = 'digit-characters required';
     validators.push(
-      {key: 'cc-num', func: _=> /\d{13,16}/.test($cardNumberInput.val())},
-      {key: 'zip', func: _=>/\d{5}/.test($zipCodeInput.val())},
-      {key: 'cvv', func: _=> /\d{3}/.test($cVVInput.val())}
+      {key: 'cc-num', func: _=> 
+        alphaCheck($cardNumberInput) ? alphaMsg :
+        !/^(\d{13,16})$/.test($cardNumberInput.val()) ? 'number between 13 and 16 required' : 
+        null
+      },
+      {key: 'zip', func: _=> 
+        alphaCheck($zipCodeInput) ? alphaMsg :
+        !/^(\d{5})$/.test($zipCodeInput.val()) ? '5 digit zip code required' : 
+        null
+      },
+      {key: 'cvv', func: _=> 
+        alphaCheck($cVVInput) ? alphaMsg :
+        !/^(\d{3})$/.test($cVVInput.val()) ? '3 digit number required':
+        null
+      }
     );
   }
 
   // check for live validation on form children
-  if (target.tagName !== 'FORM') {
+  if (target.tagName !== 'FORM') { // (not submitting)
     let key = target.id || target.className || null;
     if (!key && target.type === 'checkbox') key = 'activities';
     validators = validators.filter(v => v.key === key);
@@ -84,9 +109,11 @@ function validator(e, payment) {
   // run through field(s), hiding/showing err(s) when needed
   let errors = 0;
   validators.forEach(v => {
-    const $errorDiv = $(`.${v.key}-error`).show();
-    if (!v.func()) {
-      $errorDiv.show();
+    const $errorDiv = $(`.${v.key}-error`);
+    const res = v.func();
+    //console.log(res);
+    if (res) {
+      $errorDiv.text(res).show();
       errors++;
     } else {
       $errorDiv.hide();
